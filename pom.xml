@@ -4,9 +4,25 @@
   <groupId>com.securevault</groupId>
   <artifactId>securevault</artifactId>
   <packaging>jar</packaging>
-  <version>1.0-SNAPSHOT</version>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>11</source>
+                    <target>11</target>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+    <version>1.0-SNAPSHOT</version>
   <name>securevault</name>
   <url>http://maven.apache.org</url>
+  <properties>
+    <maven.compiler.release>27</maven.compiler.release>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+  </properties>
   <dependencies>
     <dependency>
       <groupId>junit</groupId>
