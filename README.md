@@ -11,3 +11,6 @@ SecureVault is a simple console password manager written in Java. It lets users 
 - Log out of the account.
 
 Each user has their own vault. Account passwords are hashed, and saved passwords are encrypted using AES-GCM. The program also checks account passwords for strength and known data breaches during registration.
+
+
+Registration password length is minimum 15, maximum 128.
