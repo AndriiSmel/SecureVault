@@ -1,25 +1,42 @@
 package com.securevault.repository;
 
 import com.securevault.model.User;
-import java.util.ArrayList;
+import java.sql.SQLException;
 
 public class UserRepository {
-    private ArrayList<User> userArrayList = new ArrayList<User>();
-    public int count = 0;
+    public void addUser(String username, String passwordHash, String salt) {
+        String sql = "INSERT INTO users (username, password_hash, encryption_salt) VALUES (?, ?, ?)";
 
-    public int generateId() {
-        count++; return count;
-    }
-    public void addUser(String username, String passwordHash) {
-        User user = new User(generateId(), username, passwordHash);
-        userArrayList.add(user);
-    }
-    public User searchByUsername(String username) {
-        for ( User user : userArrayList) {
-            if (user.getUsername().equals(username)){
-                return user;
-            }
+        try (var conn = Database.openConnection();
+             var statement = conn.prepareStatement(sql)) {
+            statement.setString(1, username);
+            statement.setString(2, passwordHash);
+            statement.setString(3, salt);
+            statement.executeUpdate();
+        } catch (SQLException e) {
+            throw new IllegalStateException("Could not save user.", e);
         }
-        return null;
+    }
+
+    public User searchByUsername(String username) {
+        String sql = "SELECT id, username, password_hash, encryption_salt FROM users WHERE username = ?";
+
+        try (var conn = Database.openConnection();
+             var statement = conn.prepareStatement(sql)) {
+            statement.setString(1, username);
+
+            try (var result = statement.executeQuery()) {
+                if (result.next()) {
+                    return new User(
+                            result.getInt("id"),
+                            result.getString("username"),
+                            result.getString("password_hash"),
+                            result.getString("encryption_salt"));
+                }
+                return null;
+            }
+        } catch (SQLException e) {
+            throw new IllegalStateException("Could not look up user.", e);
+        }
     }
 }

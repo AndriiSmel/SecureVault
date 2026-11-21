@@ -12,7 +12,7 @@ public class PasswordHasher {
     private static final int SALT_LENGTH = 16;
     private static final int ITERATIONS = 600000;
     private static final int KEY_LENGTH = 256;
-    private static byte[] generateSalt() {
+    public static byte[] generateSalt() {
         byte[] salt = new byte[SALT_LENGTH];
         new SecureRandom().nextBytes(salt);
         return salt;

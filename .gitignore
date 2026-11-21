@@ -18,8 +18,15 @@ out/
 *.db
 *.db-shm
 *.db-wal
+*.db-journal
 *.sqlite
 *.sqlite3
+*.sqlite-shm
+*.sqlite-wal
+*.sqlite-journal
+*.sqlite3-shm
+*.sqlite3-wal
+*.sqlite3-journal
 
 # Environment variables and secrets
 .env
@@ -34,3 +41,9 @@ out/
 # Temporary files
 *.tmp
 *.swp
+
+# Local reference screenshots (not needed to run the app)
+/password strong.png
+/password_validation.png
+/project preview ref.png
+/username_validation.png

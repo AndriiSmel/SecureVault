@@ -4,24 +4,20 @@ public class User {
     private final int id;
     private final String username;
     private String passwordHash;
-    public User(int StartId, String startUsername, String startPasswordHash) {
+    private final String encryption_salt;
+    public User(int StartId, String startUsername, String startPasswordHash, String startEncryptionSalt) {
         id = StartId;
         username = startUsername;
         passwordHash = startPasswordHash;
-    }
-
-    public void setPasswordHash(String newValue) {
-        passwordHash = newValue;
+        encryption_salt = startEncryptionSalt;
     }
 
     public int getId() {
         return id;
     }
-    public String getUsername() {
-        return username;
-    }
     public String getPasswordHash() {
         return passwordHash;
     }
+    public String getEncryptionSalt() {return encryption_salt;}
 
 }

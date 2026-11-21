@@ -1,9 +1,11 @@
 package com.securevault.service;
 import com.securevault.model.User;
 import com.securevault.repository.UserRepository;
+import com.securevault.security.PasswordHasher;
 import me.gosimple.nbvcxz.Nbvcxz;
 import me.gosimple.nbvcxz.scoring.Result;
 
+import javax.crypto.SecretKey;
 import java.io.IOException;
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -13,6 +15,7 @@ import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.time.Duration;
+import java.util.Base64;
 import java.util.HexFormat;
 import java.util.Locale;
 
@@ -23,8 +26,11 @@ import static com.securevault.security.PasswordHasher.verifyPassword;
 public class AuthService {
     private final UserRepository  userRepository;
     private User currentUser = null;
-    public AuthService(UserRepository userRepository) {
+    private final EncryptionService encryptionService;
+    private SecretKey currentKey = null;
+    public AuthService(UserRepository userRepository, EncryptionService encryptionService) {
         this.userRepository = userRepository;
+        this.encryptionService = encryptionService;
     }
     public boolean register(String username, String password) {
         if(!isValidUsername(username) || !isValidPassword(password)) {
@@ -40,7 +46,8 @@ public class AuthService {
             return false;
         }
         String passwordHash = hashPassword(password.toCharArray());
-        userRepository.addUser(username, passwordHash);
+        String salt = Base64.getEncoder().encodeToString(PasswordHasher.generateSalt());
+        userRepository.addUser(username, passwordHash, salt);
         return true;
     }
     public boolean login(String username, String password) {
@@ -55,11 +62,27 @@ public class AuthService {
         if (!verifyPassword(password.toCharArray(), passwordHash)) {
             return false;
         }
+        currentKey = encryptionService.deriveKey(password, user.getEncryptionSalt());
         currentUser = user;
         return true;
     }
     public void logout() {
         currentUser = null;
+        currentKey = null;
+    }
+
+    public int getCurrentUserId() {
+        if (currentUser == null) {
+            throw new IllegalStateException("User not logged in");
+        }
+        return currentUser.getId();
+    }
+
+    public SecretKey getCurrentKey() {
+        if (currentKey == null) {
+            throw new IllegalStateException("User not logged in");
+        }
+        return currentKey;
     }
 
     static boolean isValidUsername(String username) {
